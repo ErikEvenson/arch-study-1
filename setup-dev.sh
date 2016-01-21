@@ -153,7 +153,23 @@ docker run -d \
   gliderlabs/registrator:latest \
     consul://$(docker-machine ip swarm2):8500
 
+echo "### install a web service"
+eval "$(docker-machine env --swarm swarm-master)"
+docker run -d -P asakaguchi/docker-nodejs-hello-world
+
 echo "### check the swarm"
 eval "$(docker-machine env --swarm swarm-master)"
 docker info
 docker ps
+
+echo "### build nginx-data image"
+eval $(docker-machine env swarm-master)
+cd nginx-data/etc/consul-template
+docker build --rm -t eevenson/nginx-data .
+cd ../../..
+
+eval $(docker-machine env --swarm swarm-master)
+CONT_ID=$(docker run -d -e constraint:node==swarm-master eevenson/nginx-data)
+
+docker run -d --volumes-from $CONT_ID -p 80:80 -p 443:443 \
+  -e constraint:node==swarm-master seges/nginx-consul:1.9.9
