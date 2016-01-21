@@ -137,6 +137,7 @@ docker run -d \
   --net=host \
   --volume=/var/run/docker.sock:/tmp/docker.sock \
   gliderlabs/registrator:latest \
+    -ip $(docker-machine ip swarm-master) \
     consul://$(docker-machine ip swarm-master):8500
 
 docker run -d \
@@ -144,6 +145,7 @@ docker run -d \
   --net=host \
   --volume=/var/run/docker.sock:/tmp/docker.sock \
   gliderlabs/registrator:latest \
+    -ip $(docker-machine ip swarm1) \
     consul://$(docker-machine ip swarm1):8500
 
 docker run -d \
@@ -151,6 +153,7 @@ docker run -d \
   --net=host \
   --volume=/var/run/docker.sock:/tmp/docker.sock \
   gliderlabs/registrator:latest \
+    -ip $(docker-machine ip swarm2) \
     consul://$(docker-machine ip swarm2):8500
 
 echo "### install a web service"
@@ -172,4 +175,5 @@ eval $(docker-machine env --swarm swarm-master)
 CONT_ID=$(docker run -d -e constraint:node==swarm-master eevenson/nginx-data)
 
 docker run -d --volumes-from $CONT_ID -p 80:80 -p 443:443 \
+  --dns=$(docker-machine ip node1) \
   -e constraint:node==swarm-master seges/nginx-consul:1.9.9
