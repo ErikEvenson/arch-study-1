@@ -166,14 +166,14 @@ docker info
 docker ps
 
 echo "### build nginx-data image"
-eval $(docker-machine env swarm-master)
+eval $(docker-machine env node1)
 cd nginx-data/etc/consul-template
 docker build --rm -t eevenson/nginx-data .
 cd ../../..
 
-eval $(docker-machine env --swarm swarm-master)
-CONT_ID=$(docker run -d -e constraint:node==swarm-master eevenson/nginx-data)
+eval $(docker-machine env node1)
+CONT_ID=$(docker run -d eevenson/nginx-data)
 
 docker run -d --volumes-from $CONT_ID -p 80:80 -p 443:443 \
   --dns=172.17.0.1 \
-  -e constraint:node==swarm-master seges/nginx-consul:1.9.9
+  seges/nginx-consul:1.9.9
