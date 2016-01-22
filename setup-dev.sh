@@ -8,17 +8,17 @@ echo "### install consul and registrator..."
 
 eval $(docker-machine env node1)
 
-docker run -d --net=host -v /mnt:/data --name=consul \
-  -p $(docker-machine ip node1):8300:8300 \
-  -p $(docker-machine ip node1):8301:8301 \
-  -p $(docker-machine ip node1):8301:8301/udp \
-  -p $(docker-machine ip node1):8302:8302 \
-  -p $(docker-machine ip node1):8302:8302/udp \
-  -p $(docker-machine ip node1):8400:8400 \
-  -p $(docker-machine ip node1):8500:8500 \
-  -p 172.17.0.1:53:53/udp \
+docker run -d -v /mnt:/data --name=consul \
+  -p 8300:8300 \
+  -p 8301:8301 \
+  -p 8301:8301/udp \
+  -p 8302:8302 \
+  -p 8302:8302/udp \
+  -p 8400:8400 \
+  -p 8500:8500 \
+  -p 53:8600/udp \
   gliderlabs/consul-server:0.6 -server -advertise $(docker-machine ip node1) \
-  -bootstrap-expect 3
+  -client 0.0.0.0 -bootstrap-expect 3
 
 docker run -d \
   --name=registrator \
@@ -29,17 +29,17 @@ docker run -d \
 
 eval $(docker-machine env node2)
 
-docker run -d --net=host -v /mnt:/data --name=consul \
-  -p $(docker-machine ip node2):8300:8300 \
-  -p $(docker-machine ip node2):8301:8301 \
-  -p $(docker-machine ip node2):8301:8301/udp \
-  -p $(docker-machine ip node2):8302:8302 \
-  -p $(docker-machine ip node2):8302:8302/udp \
-  -p $(docker-machine ip node2):8400:8400 \
-  -p $(docker-machine ip node2):8500:8500 \
-  -p 172.17.0.1:53:53/udp \
+docker run -d -v /mnt:/data --name=consul \
+  -p 8300:8300 \
+  -p 8301:8301 \
+  -p 8301:8301/udp \
+  -p 8302:8302 \
+  -p 8302:8302/udp \
+  -p 8400:8400 \
+  -p 8500:8500 \
+  -p 53:8600/udp \
   gliderlabs/consul-server:0.6 -server -advertise $(docker-machine ip node2) \
-  -join $(docker-machine ip node1)
+  -client 0.0.0.0 -join $(docker-machine ip node1)
 
 docker run -d \
   --name=registrator \
@@ -50,17 +50,17 @@ docker run -d \
 
 eval $(docker-machine env node3)
 
-docker run -d --net=host -v /mnt:/data --name=consul \
-  -p $(docker-machine ip node3):8300:8300 \
-  -p $(docker-machine ip node3):8301:8301 \
-  -p $(docker-machine ip node3):8301:8301/udp \
-  -p $(docker-machine ip node3):8302:8302 \
-  -p $(docker-machine ip node3):8302:8302/udp \
-  -p $(docker-machine ip node3):8400:8400 \
-  -p $(docker-machine ip node3):8500:8500 \
-  -p 172.17.0.1:53:53/udp \
+docker run -d -v /mnt:/data --name=consul \
+  -p 8300:8300 \
+  -p 8301:8301 \
+  -p 8301:8301/udp \
+  -p 8302:8302 \
+  -p 8302:8302/udp \
+  -p 8400:8400 \
+  -p 8500:8500 \
+  -p 53:8600/udp \
   gliderlabs/consul-server:0.6 -server -advertise $(docker-machine ip node3) \
-  -join $(docker-machine ip node1)
+  -client 0.0.0.0 -join $(docker-machine ip node1)
 
 docker run -d \
   --name=registrator \
@@ -71,7 +71,7 @@ docker run -d \
 
 echo "### test consul dns..."
 
-dig @$(docker-machine ip node1) -p 8600 consul.service.consul
+dig @$(docker-machine ip node1) consul.service.consul
 
 echo "### set up swarm..."
 
@@ -86,48 +86,48 @@ docker-machine create --driver virtualbox --swarm --swarm-discovery \
 
 eval $(docker-machine env swarm-master)
 
-docker run --net=host \
-  -p $(docker-machine ip swarm-master):8300:8300 \
-  -p $(docker-machine ip swarm-master):8301:8301 \
-  -p $(docker-machine ip swarm-master):8301:8301/udp \
-  -p $(docker-machine ip swarm-master):8302:8302 \
-  -p $(docker-machine ip swarm-master):8302:8302/udp \
-  -p $(docker-machine ip swarm-master):8400:8400 \
-  -p $(docker-machine ip swarm-master):8500:8500 \
-  -p 172.17.0.1:53:53/udp \
+docker run \
+  -p 8300:8300 \
+  -p 8301:8301 \
+  -p 8301:8301/udp \
+  -p 8302:8302 \
+  -p 8302:8302/udp \
+  -p 8400:8400 \
+  -p 8500:8500 \
+  -p 53:8600/udp \
   -d -v /mnt:/data \
   gliderlabs/consul-server:0.6 -advertise $(docker-machine ip swarm-master) \
-  -join $(docker-machine ip node1)
+  -client 0.0.0.0 -join $(docker-machine ip node1)
 
 eval $(docker-machine env swarm1)
 
-docker run --net=host \
-  -p $(docker-machine ip swarm1):8300:8300 \
-  -p $(docker-machine ip swarm1):8301:8301 \
-  -p $(docker-machine ip swarm1):8301:8301/udp \
-  -p $(docker-machine ip swarm1):8302:8302 \
-  -p $(docker-machine ip swarm1):8302:8302/udp \
-  -p $(docker-machine ip swarm1):8400:8400 \
-  -p $(docker-machine ip swarm1):8500:8500 \
-  -p 172.17.0.1:53:53/udp \
+docker run \
+  -p 8300:8300 \
+  -p 8301:8301 \
+  -p 8301:8301/udp \
+  -p 8302:8302 \
+  -p 8302:8302/udp \
+  -p 8400:8400 \
+  -p 8500:8500 \
+  -p 53:8600/udp \
   -d -v /mnt:/data \
   gliderlabs/consul-server:0.6 -advertise $(docker-machine ip swarm1) \
-  -join $(docker-machine ip node1)
+  -client 0.0.0.0 -join $(docker-machine ip node1)
 
 eval $(docker-machine env swarm2)
 
-docker run --net=host \
-  -p $(docker-machine ip swarm2):8300:8300 \
-  -p $(docker-machine ip swarm2):8301:8301 \
-  -p $(docker-machine ip swarm2):8301:8301/udp \
-  -p $(docker-machine ip swarm2):8302:8302 \
-  -p $(docker-machine ip swarm2):8302:8302/udp \
-  -p $(docker-machine ip swarm2):8400:8400 \
-  -p $(docker-machine ip swarm2):8500:8500 \
-  -p 172.17.0.1:53:53/udp \
+docker run \
+  -p 8300:8300 \
+  -p 8301:8301 \
+  -p 8301:8301/udp \
+  -p 8302:8302 \
+  -p 8302:8302/udp \
+  -p 8400:8400 \
+  -p 8500:8500 \
+  -p 53:8600/udp \
   -d -v /mnt:/data \
   gliderlabs/consul-server:0.6 -advertise $(docker-machine ip swarm2) \
-  -join $(docker-machine ip node1)
+  -client 0.0.0.0 -join $(docker-machine ip node1)
 
 echo "### install registrator on swarm"
 eval "$(docker-machine env --swarm swarm-master)"
@@ -175,5 +175,5 @@ eval $(docker-machine env --swarm swarm-master)
 CONT_ID=$(docker run -d -e constraint:node==swarm-master eevenson/nginx-data)
 
 docker run -d --volumes-from $CONT_ID -p 80:80 -p 443:443 \
-  --dns=$(docker-machine ip node1) \
+  --dns=172.17.0.1 \
   -e constraint:node==swarm-master seges/nginx-consul:1.9.9
