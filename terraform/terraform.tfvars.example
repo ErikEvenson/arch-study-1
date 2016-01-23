@@ -1,0 +1,6 @@
+aws_access_key = ""
+aws_secret_key = ""
+key_name = "calldrive"
+key_path = "~/.ssh/calldrive_aws/calldrive.pem"
+project_name = "CallDrive cluster"
+public_key_path = "~/.ssh/calldrive_aws/calldrive.pub"
