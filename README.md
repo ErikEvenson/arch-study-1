@@ -3,6 +3,11 @@
 ## Cluster infrastructure
 Terraform source inspired by [https://github.com/hashicorp/terraform/tree/master/examples/aws-two-tier](https://github.com/hashicorp/terraform/tree/master/examples/aws-two-tier).
 
+Pipe traffic
+```bash
+ssh -N -f -i "arch-study-1.pem" -L 8500:localhost:8500 ubuntu@54.153.118.193
+```
+
 ## Docker host AMI
 
 ```bash
