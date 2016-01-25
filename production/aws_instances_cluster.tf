@@ -50,6 +50,10 @@ resource "aws_instance" "cluster_node_1" {
 
   provisioner "remote-exec" {
     inline = [
+      "sudo service docker stop",
+      "sudo rm /etc/docker/key.json",
+      "sudo service docker start",
+
       "docker run \\",
         "-p 8300:8300 \\",
         "-p 8301:8301 \\",
@@ -116,6 +120,10 @@ resource "aws_instance" "cluster_node_2" {
 
   provisioner "remote-exec" {
     inline = [
+      "sudo service docker stop",
+      "sudo rm /etc/docker/key.json",
+      "sudo service docker start",
+
       "docker run \\",
         "-p 8300:8300 \\",
         "-p 8301:8301 \\",
@@ -180,6 +188,10 @@ resource "aws_instance" "cluster_node_3" {
 
   provisioner "remote-exec" {
     inline = [
+      "sudo service docker stop",
+      "sudo rm /etc/docker/key.json",
+      "sudo service docker start",
+
       "docker run \\",
         "-p 8300:8300 \\",
         "-p 8301:8301 \\",
