@@ -1,3 +1,22 @@
+# docker
+resource "aws_security_group" "docker" {
+  name        = "docker security group"
+  description = "docker security group for ${var.project_name}"
+  vpc_id      = "${aws_vpc.default.id}"
+
+  # SSH access from anywhere
+  ingress {
+    from_port   = 2375
+    to_port     = 2375
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
+  }
+
+  tags {
+    Name = "${var.project_name}"
+  }
+}
+
 # outbound
 resource "aws_security_group" "outbound" {
   name        = "outbound security group"
