@@ -4,10 +4,17 @@ resource "aws_security_group" "docker" {
   description = "docker security group for ${var.project_name}"
   vpc_id      = "${aws_vpc.default.id}"
 
-  # SSH access from anywhere
+  # docker daemon access from VPC
   ingress {
     from_port   = 2375
     to_port     = 2375
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
+  }
+
+  ingress {
+    from_port   = 3375
+    to_port     = 3375
     protocol    = "tcp"
     cidr_blocks = ["10.0.0.0/16"]
   }

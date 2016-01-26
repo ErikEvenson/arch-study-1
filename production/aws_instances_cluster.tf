@@ -38,15 +38,27 @@ resource "aws_instance" "cluster_node_1" {
   # The name of our SSH keypair we created above.
   key_name = "${aws_key_pair.auth.id}"
 
-  # Our Security group to allow HTTP and SSH access
+  # Add security groups
   vpc_security_group_ids = [
     "${aws_security_group.consul.id}",
+    "${aws_security_group.docker.id}",
     "${aws_security_group.outbound.id}",
     "${aws_security_group.ssh.id}"
   ]
 
   # Launch into the public subnet.
   subnet_id = "${aws_subnet.public.id}"
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chown ubuntu:ubuntu /etc/default/docker"
+    ]
+  }
+
+  provisioner "file" {
+    source = "./docker"
+    destination = "/etc/default/docker"
+  }
 
   provisioner "remote-exec" {
     inline = [
@@ -74,7 +86,13 @@ resource "aws_instance" "cluster_node_1" {
           "-ip '${var.cluster_node_1_ip}' \\",
           "consul://'${var.cluster_node_1_ip}':8500",
 
-      "docker run -d -P asakaguchi/docker-nodejs-hello-world"
+      "docker run -d swarm join --addr='${var.cluster_node_1_ip}':2375 \\",
+        "consul://'${var.cluster_node_1_ip}':8500/swarm",
+
+      "docker run -d -p 3375:2375 swarm manage \\",
+        "consul://'${var.cluster_node_1_ip}':8500/swarm"
+
+      # "docker run -d -P asakaguchi/docker-nodejs-hello-world"
     ]
   }
 
@@ -108,15 +126,27 @@ resource "aws_instance" "cluster_node_2" {
   # The name of our SSH keypair we created above.
   key_name = "${aws_key_pair.auth.id}"
 
-  # Our Security group to allow HTTP and SSH access
+  # Add security groups
   vpc_security_group_ids = [
     "${aws_security_group.consul.id}",
+    "${aws_security_group.docker.id}",
     "${aws_security_group.outbound.id}",
     "${aws_security_group.ssh.id}"
   ]
 
   # Launch into the public subnet.
   subnet_id = "${aws_subnet.public.id}"
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chown ubuntu:ubuntu /etc/default/docker"
+    ]
+  }
+
+  provisioner "file" {
+    source = "./docker"
+    destination = "/etc/default/docker"
+  }
 
   provisioner "remote-exec" {
     inline = [
@@ -142,7 +172,10 @@ resource "aws_instance" "cluster_node_2" {
         "--volume=/var/run/docker.sock:/tmp/docker.sock \\",
         "gliderlabs/registrator:latest \\",
           "-ip '${var.cluster_node_2_ip}' \\",
-          "consul://'${var.cluster_node_2_ip}':8500"
+          "consul://'${var.cluster_node_2_ip}':8500",
+
+      "docker run -d swarm join --addr='${var.cluster_node_2_ip}':2375 \\",
+        "consul://'${var.cluster_node_2_ip}':8500/swarm"
     ]
   }
 
@@ -176,15 +209,27 @@ resource "aws_instance" "cluster_node_3" {
   # The name of our SSH keypair we created above.
   key_name = "${aws_key_pair.auth.id}"
 
-  # Our Security group to allow HTTP and SSH access
+  # Add security groups
   vpc_security_group_ids = [
     "${aws_security_group.consul.id}",
+    "${aws_security_group.docker.id}",
     "${aws_security_group.outbound.id}",
     "${aws_security_group.ssh.id}"
   ]
 
   # Launch into the public subnet.
   subnet_id = "${aws_subnet.public.id}"
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chown ubuntu:ubuntu /etc/default/docker"
+    ]
+  }
+
+  provisioner "file" {
+    source = "./docker"
+    destination = "/etc/default/docker"
+  }
 
   provisioner "remote-exec" {
     inline = [
@@ -210,7 +255,10 @@ resource "aws_instance" "cluster_node_3" {
         "--volume=/var/run/docker.sock:/tmp/docker.sock \\",
         "gliderlabs/registrator:latest \\",
           "-ip '${var.cluster_node_3_ip}' \\",
-          "consul://'${var.cluster_node_3_ip}':8500"
+          "consul://'${var.cluster_node_3_ip}':8500",
+
+      "docker run -d swarm join --addr='${var.cluster_node_3_ip}':2375 \\",
+        "consul://'${var.cluster_node_3_ip}':8500/swarm"
     ]
   }
 
@@ -218,3 +266,10 @@ resource "aws_instance" "cluster_node_3" {
     Name = "${var.project_name}"
   }
 }
+
+
+# docker run -d swarm join --addr=10.0.0.104:2375 consul://172.17.0.1:8500/swarm
+# docker run -d swarm join --addr=10.0.0.105:2375 consul://172.17.0.1:8500/swarm
+# docker run -d swarm join --addr=10.0.0.106:2375 consul://172.17.0.1:8500/swarm
+
+# docker run -d -p 3375:2375 swarm manage consul://172.17.0.1:8500/swarm
