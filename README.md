@@ -37,6 +37,7 @@ Browse:
 
 ```bash
 curl $(docker-machine ip node1)
+curl $(docker-machine ip node1):8500/ui
 eval "$(docker-machine env --swarm swarm-master)"
 docker ps
 ```
