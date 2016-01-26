@@ -18,7 +18,7 @@ docker run -d -v /mnt:/data --name=consul \
   -p 8500:8500 \
   -p 53:8600/udp \
   gliderlabs/consul-server:0.6 -server -advertise $(docker-machine ip node1) \
-  -client 0.0.0.0 -bootstrap-expect 3
+  -client 0.0.0.0 -node node1 -bootstrap-expect 3
 
 docker run -d \
   --name=registrator \
@@ -39,7 +39,7 @@ docker run -d -v /mnt:/data --name=consul \
   -p 8500:8500 \
   -p 53:8600/udp \
   gliderlabs/consul-server:0.6 -server -advertise $(docker-machine ip node2) \
-  -client 0.0.0.0 -join $(docker-machine ip node1)
+  -client 0.0.0.0 -node node2 -join $(docker-machine ip node1)
 
 docker run -d \
   --name=registrator \
@@ -60,7 +60,7 @@ docker run -d -v /mnt:/data --name=consul \
   -p 8500:8500 \
   -p 53:8600/udp \
   gliderlabs/consul-server:0.6 -server -advertise $(docker-machine ip node3) \
-  -client 0.0.0.0 -join $(docker-machine ip node1)
+  -client 0.0.0.0 -node node3 -join $(docker-machine ip node1)
 
 docker run -d \
   --name=registrator \
@@ -97,7 +97,7 @@ docker run \
   -p 53:8600/udp \
   -d -v /mnt:/data \
   gliderlabs/consul-server:0.6 -advertise $(docker-machine ip swarm-master) \
-  -client 0.0.0.0 -join $(docker-machine ip node1)
+  -client 0.0.0.0 -node swarm-master -join $(docker-machine ip node1)
 
 eval $(docker-machine env swarm1)
 
@@ -112,7 +112,7 @@ docker run \
   -p 53:8600/udp \
   -d -v /mnt:/data \
   gliderlabs/consul-server:0.6 -advertise $(docker-machine ip swarm1) \
-  -client 0.0.0.0 -join $(docker-machine ip node1)
+  -client 0.0.0.0 -node swarm1 -join $(docker-machine ip node1)
 
 eval $(docker-machine env swarm2)
 
@@ -127,7 +127,7 @@ docker run \
   -p 53:8600/udp \
   -d -v /mnt:/data \
   gliderlabs/consul-server:0.6 -advertise $(docker-machine ip swarm2) \
-  -client 0.0.0.0 -join $(docker-machine ip node1)
+  -client 0.0.0.0 -node swarm2 -join $(docker-machine ip node1)
 
 echo "### install registrator on swarm"
 eval "$(docker-machine env --swarm swarm-master)"
