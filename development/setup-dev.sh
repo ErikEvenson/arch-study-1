@@ -167,9 +167,9 @@ docker ps
 
 echo "### build nginx-data image"
 eval $(docker-machine env node1)
-cd nginx-data/etc/consul-template
+cd ../nginx-data/etc/consul-template
 docker build --rm -t eevenson/nginx-data .
-cd ../../..
+cd ../../../development
 
 eval $(docker-machine env node1)
 CONT_ID=$(docker run -d eevenson/nginx-data)

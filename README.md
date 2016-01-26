@@ -23,3 +23,26 @@ packer build \
 ```
 
 Packer source inspired by [https://github.com/d11wtq/docker-ami-packer](https://github.com/d11wtq/docker-ami-packer).
+
+## development
+
+Setup:
+
+```bash
+cd development
+./setup-dev.sh
+```
+
+Browse:
+
+```bash
+curl $(docker-machine ip node1)
+eval "$(docker-machine env --swarm swarm-master)"
+docker ps
+```
+
+Teardown:
+
+```bash
+./teardown-dev.sh
+```
